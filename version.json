@@ -4,5 +4,5 @@
     "minSupportedVersion":  "1.0.00",
     "downloadUrl":  "https://github.com/kdg200121-hash/AI_CAD-updates",
     "installerPackageUrl":  "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/SeesumAI.bundle.zip",
-    "releaseNote":  "Seesum AI AutoCAD managed update package with startup update check."
+    "releaseNote":  "Seesum AI AutoCAD managed update package with startup update check and BTE worksheet export."
 }
