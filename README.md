@@ -21,6 +21,6 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 ## Current Release
 
-- Version: 1.0.02
+- Version: 1.0.03
 - Minimum supported version: 1.0.00
-- Release note: Fix AutoCAD startup lag by moving backup bundles out of ApplicationPlugins and simplifying the manual/version ribbon panel.
+- Release note: Clean stale AutoCAD add-in DLLs and icons during install, and publish a clean 1.0.03 payload.

@@ -272,6 +272,32 @@ function Move-PluginBackupsOut {
     }
 }
 
+function Remove-StalePayloadFiles {
+    param([string]$TargetBundle)
+
+    $windowsDir = Join-Path $TargetBundle "Contents\Windows"
+    if (-not (Test-Path -LiteralPath $windowsDir)) {
+        return
+    }
+
+    $allowedDlls = @(
+        "SeesumAiRibbon_v52.dll",
+        "SeesumAiUpdateChecker_v7.dll",
+        "SeesumAiRibbonInfo_v4.dll"
+    )
+
+    Get-ChildItem -LiteralPath $windowsDir -File -Filter "SeesumAi*.dll" -ErrorAction SilentlyContinue |
+        Where-Object { $allowedDlls -notcontains $_.Name } |
+        Remove-Item -Force
+
+    foreach ($staleIcon in @("manual.png", "version.png")) {
+        $path = Join-Path $windowsDir "Resources\$staleIcon"
+        if (Test-Path -LiteralPath $path) {
+            Remove-Item -LiteralPath $path -Force
+        }
+    }
+}
+
 Initialize-InstallerWindow
 
 try {
@@ -306,6 +332,7 @@ try {
     }
 
     Copy-Item -LiteralPath $bundleRoot -Destination $targetBundle -Recurse -Force
+    Remove-StalePayloadFiles -TargetBundle $targetBundle
 
     Complete-InstallerWindow `
         -Status "Update installed." `
