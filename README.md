@@ -21,6 +21,6 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 ## Current Release
 
-- Version: 1.0.01
+- Version: 1.0.02
 - Minimum supported version: 1.0.00
-- Release note: Fix AutoCAD ribbon initialization lag by adding the manual/version panel only once.
+- Release note: Fix AutoCAD startup lag by moving backup bundles out of ApplicationPlugins and simplifying the manual/version ribbon panel.

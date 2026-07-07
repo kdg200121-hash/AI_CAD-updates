@@ -225,6 +225,53 @@ function Find-BundleRoot {
     throw "Could not find SeesumAI.bundle in extracted package."
 }
 
+function Get-BackupRoot {
+    $localAppData = [Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)
+    if ([string]::IsNullOrWhiteSpace($localAppData)) {
+        $localAppData = $env:LOCALAPPDATA
+    }
+
+    return Join-Path $localAppData "SeesumAI\AutoCAD\Backups"
+}
+
+function Get-UniqueBackupPath {
+    param(
+        [string]$BackupRoot,
+        [string]$Name
+    )
+
+    $destination = Join-Path $BackupRoot $Name
+    if (-not (Test-Path -LiteralPath $destination)) {
+        return $destination
+    }
+
+    $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
+    return Join-Path $BackupRoot "$Name.moved_$stamp"
+}
+
+function Move-PluginBackupsOut {
+    param(
+        [string]$TargetPlugins,
+        [string]$TargetBundleName
+    )
+
+    if (-not (Test-Path -LiteralPath $TargetPlugins)) {
+        return
+    }
+
+    $backupRoot = Get-BackupRoot
+    New-Item -ItemType Directory -Force -Path $backupRoot | Out-Null
+
+    $backupFilters = @("$TargetBundleName.backup_*", "$TargetBundleName.backup-*", "SeesumAI.bundle.backup_*", "SeesumAI.bundle.backup-*") | Select-Object -Unique
+    foreach ($filter in $backupFilters) {
+        Get-ChildItem -LiteralPath $TargetPlugins -Directory -Filter $filter -ErrorAction SilentlyContinue |
+            ForEach-Object {
+                $destination = Get-UniqueBackupPath -BackupRoot $backupRoot -Name $_.Name
+                Move-Item -LiteralPath $_.FullName -Destination $destination
+            }
+    }
+}
+
 Initialize-InstallerWindow
 
 try {
@@ -248,10 +295,13 @@ try {
     $targetPlugins = Join-Path $env:APPDATA "Autodesk\ApplicationPlugins"
     $targetBundle = Join-Path $targetPlugins $TargetBundleName
     New-Item -ItemType Directory -Force -Path $targetPlugins | Out-Null
+    Move-PluginBackupsOut -TargetPlugins $targetPlugins -TargetBundleName $TargetBundleName
 
     if (Test-Path -LiteralPath $targetBundle) {
         $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
-        $backup = Join-Path $targetPlugins "$TargetBundleName.backup_$stamp"
+        $backupRoot = Get-BackupRoot
+        New-Item -ItemType Directory -Force -Path $backupRoot | Out-Null
+        $backup = Join-Path $backupRoot "$TargetBundleName.backup_$stamp"
         Move-Item -LiteralPath $targetBundle -Destination $backup
     }
 
