@@ -1,10 +1,10 @@
 ﻿{
     "appName":  "Seesum AI AutoCAD",
-    "latestVersion":  "1.0.04",
-    "latestDisplayVersion":  "1.0.04",
-    "minSupportedVersion":  "1.0.00",
-    "minSupportedDisplayVersion":  "1.0.00",
+    "latestVersion":  "1.0.5",
+    "latestDisplayVersion":  "1.0.5",
+    "minSupportedVersion":  "1.0.0",
+    "minSupportedDisplayVersion":  "1.0.0",
     "downloadUrl":  "https://github.com/kdg200121-hash/AI_CAD-updates",
     "installerPackageUrl":  "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/SeesumAI.bundle.zip",
-    "releaseNote":  "Add a clear Update button, launch the installer visibly, and close AutoCAD after starting the update."
+    "releaseNote":  "Fix installer access denied by running the updater from temp and falling back to in-place bundle updates when backup move is blocked."
 }

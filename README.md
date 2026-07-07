@@ -21,6 +21,6 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 ## Current Release
 
-- Version: 1.0.04
-- Minimum supported version: 1.0.00
-- Release note: Add a clear Update button, launch the installer visibly, and close AutoCAD after starting the update.
+- Version: 1.0.5
+- Minimum supported version: 1.0.0
+- Release note: Fix installer access denied by running the updater from temp and falling back to in-place bundle updates when backup move is blocked.

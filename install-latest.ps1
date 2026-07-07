@@ -272,6 +272,71 @@ function Move-PluginBackupsOut {
     }
 }
 
+function Copy-BundleContents {
+    param(
+        [string]$SourceBundle,
+        [string]$TargetBundle
+    )
+
+    New-Item -ItemType Directory -Force -Path $TargetBundle | Out-Null
+
+    Get-ChildItem -LiteralPath $SourceBundle -Force -Recurse |
+        ForEach-Object {
+            $relative = $_.FullName.Substring($SourceBundle.Length)
+            $relative = $relative.TrimStart([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+            $destination = Join-Path $TargetBundle $relative
+
+            if ($_.PSIsContainer) {
+                New-Item -ItemType Directory -Force -Path $destination | Out-Null
+            }
+            else {
+                New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
+                Copy-Item -LiteralPath $_.FullName -Destination $destination -Force
+            }
+        }
+}
+
+function Copy-BundleBackupBestEffort {
+    param(
+        [string]$SourceBundle,
+        [string]$Backup
+    )
+
+    try {
+        Copy-BundleContents -SourceBundle $SourceBundle -TargetBundle $Backup
+    }
+    catch {
+        Set-InstallerProgress `
+            -Status "Installing add-in files..." `
+            -Percent 82 `
+            -Detail "Backup copy skipped. Existing files will be updated in place.`r`n$($_.Exception.Message)"
+    }
+}
+
+function Move-ExistingBundleToBackupOrOverlay {
+    param(
+        [string]$TargetBundle,
+        [string]$Backup
+    )
+
+    if (-not (Test-Path -LiteralPath $TargetBundle)) {
+        return $true
+    }
+
+    try {
+        Move-Item -LiteralPath $TargetBundle -Destination $Backup
+        return $true
+    }
+    catch {
+        Set-InstallerProgress `
+            -Status "Installing add-in files..." `
+            -Percent 82 `
+            -Detail "Existing bundle could not be moved. Installing over the current bundle.`r`n$($_.Exception.Message)"
+        Copy-BundleBackupBestEffort -SourceBundle $TargetBundle -Backup $Backup
+        return $false
+    }
+}
+
 function Remove-StalePayloadFiles {
     param([string]$TargetBundle)
 
@@ -282,8 +347,8 @@ function Remove-StalePayloadFiles {
 
     $allowedDlls = @(
         "SeesumAiRibbon_v52.dll",
-        "SeesumAiUpdateChecker_v8.dll",
-        "SeesumAiRibbonInfo_v5.dll"
+        "SeesumAiUpdateChecker_v9.dll",
+        "SeesumAiRibbonInfo_v6.dll"
     )
 
     Get-ChildItem -LiteralPath $windowsDir -File -Filter "SeesumAi*.dll" -ErrorAction SilentlyContinue |
@@ -328,10 +393,10 @@ try {
         $backupRoot = Get-BackupRoot
         New-Item -ItemType Directory -Force -Path $backupRoot | Out-Null
         $backup = Join-Path $backupRoot "$TargetBundleName.backup_$stamp"
-        Move-Item -LiteralPath $targetBundle -Destination $backup
+        Move-ExistingBundleToBackupOrOverlay -TargetBundle $targetBundle -Backup $backup | Out-Null
     }
 
-    Copy-Item -LiteralPath $bundleRoot -Destination $targetBundle -Recurse -Force
+    Copy-BundleContents -SourceBundle $bundleRoot -TargetBundle $targetBundle
     Remove-StalePayloadFiles -TargetBundle $targetBundle
 
     Complete-InstallerWindow `
