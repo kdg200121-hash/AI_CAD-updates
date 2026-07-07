@@ -147,6 +147,11 @@ function Get-PackageUrl {
         return $ExplicitPackageUrl
     }
 
+    $localPackagePath = Join-Path $PSScriptRoot "SeesumAI.bundle.zip"
+    if (Test-Path -LiteralPath $localPackagePath) {
+        return $localPackagePath
+    }
+
     if ($VersionInfo.PSObject.Properties.Name -contains "installerPackageUrl") {
         return [string]$VersionInfo.installerPackageUrl
     }
