@@ -23,4 +23,4 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 - Version: 1.0.00
 - Minimum supported version: 1.0.00
-- Release note: Seesum AI AutoCAD managed update package with EXE installer, local package fallback, and BTE worksheet export.
+- Release note: Seesum AI AutoCAD managed update package with EXE installer, ribbon manual/version panel, and BTE worksheet export.
