@@ -282,8 +282,8 @@ function Remove-StalePayloadFiles {
 
     $allowedDlls = @(
         "SeesumAiRibbon_v52.dll",
-        "SeesumAiUpdateChecker_v7.dll",
-        "SeesumAiRibbonInfo_v4.dll"
+        "SeesumAiUpdateChecker_v8.dll",
+        "SeesumAiRibbonInfo_v5.dll"
     )
 
     Get-ChildItem -LiteralPath $windowsDir -File -Filter "SeesumAi*.dll" -ErrorAction SilentlyContinue |
