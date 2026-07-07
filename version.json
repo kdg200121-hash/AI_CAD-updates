@@ -1,10 +1,10 @@
 ﻿{
     "appName":  "Seesum AI AutoCAD",
-    "latestVersion":  "1.0.00",
-    "latestDisplayVersion":  "1.0.00",
+    "latestVersion":  "1.0.01",
+    "latestDisplayVersion":  "1.0.01",
     "minSupportedVersion":  "1.0.00",
     "minSupportedDisplayVersion":  "1.0.00",
     "downloadUrl":  "https://github.com/kdg200121-hash/AI_CAD-updates",
     "installerPackageUrl":  "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/SeesumAI.bundle.zip",
-    "releaseNote":  "Seesum AI AutoCAD managed update package with EXE installer, ribbon manual/version panel, and BTE worksheet export."
+    "releaseNote":  "Fix AutoCAD ribbon initialization lag by adding the manual/version panel only once."
 }

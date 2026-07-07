@@ -21,6 +21,6 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 ## Current Release
 
-- Version: 1.0.00
+- Version: 1.0.01
 - Minimum supported version: 1.0.00
-- Release note: Seesum AI AutoCAD managed update package with EXE installer, ribbon manual/version panel, and BTE worksheet export.
+- Release note: Fix AutoCAD ribbon initialization lag by adding the manual/version panel only once.
