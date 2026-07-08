@@ -1,10 +1,10 @@
 ﻿{
     "appName":  "Seesum AI AutoCAD",
-    "latestVersion":  "1.0.6",
-    "latestDisplayVersion":  "1.0.6",
+    "latestVersion":  "1.0.7",
+    "latestDisplayVersion":  "1.0.7",
     "minSupportedVersion":  "1.0.0",
     "minSupportedDisplayVersion":  "1.0.0",
     "downloadUrl":  "https://github.com/kdg200121-hash/AI_CAD-updates",
     "installerPackageUrl":  "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/SeesumAI.bundle.zip",
-    "releaseNote":  "PCC opening-aware wall selection and BME locked-layer handling."
+    "releaseNote":  "AutoCAD update now requests AutoCAD shutdown automatically and ignores locked stale DLL cleanup failures."
 }

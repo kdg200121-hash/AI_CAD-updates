@@ -1,7 +1,9 @@
 ﻿param(
     [string]$VersionJsonUrl = "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/version.json",
     [string]$PackageUrl,
-    [string]$TargetBundleName = "SeesumAI.bundle"
+    [string]$TargetBundleName = "SeesumAI.bundle",
+    [int]$AutoCADPid = 0,
+    [switch]$StartedFromAutoCAD
 )
 
 $ErrorActionPreference = "Stop"
@@ -167,8 +169,40 @@ function Get-PackageUrl {
     throw "Package URL was not found in version info."
 }
 
+function Request-AutoCADExit {
+    param([int]$ProcessId)
+
+    $targets = @()
+    if ($ProcessId -gt 0) {
+        $target = Get-Process -Id $ProcessId -ErrorAction SilentlyContinue
+        if ($target) {
+            $targets += $target
+        }
+    }
+
+    if ($targets.Count -eq 0) {
+        $targets = @(Get-Process -Name acad -ErrorAction SilentlyContinue)
+    }
+
+    foreach ($target in $targets) {
+        try {
+            $target.CloseMainWindow() | Out-Null
+        }
+        catch {
+        }
+    }
+}
+
 function Wait-AutoCADExit {
-    Set-InstallerProgress -Status "Waiting for AutoCAD to close..." -Percent 20 -Detail "Close AutoCAD to continue installing the update."
+    $detail = if ($StartedFromAutoCAD) {
+        "AutoCAD is closing automatically. Respond to any AutoCAD save prompt to continue."
+    }
+    else {
+        "Close AutoCAD or respond to any AutoCAD save prompt to continue installing the update."
+    }
+
+    Set-InstallerProgress -Status "Waiting for AutoCAD to close..." -Percent 20 -Detail $detail
+    Request-AutoCADExit -ProcessId $AutoCADPid
     $deadline = (Get-Date).AddMinutes(5)
     while ((Get-Process -Name acad -ErrorAction SilentlyContinue) -and (Get-Date) -lt $deadline) {
         [System.Windows.Forms.Application]::DoEvents()
@@ -176,7 +210,7 @@ function Wait-AutoCADExit {
     }
 
     if (Get-Process -Name acad -ErrorAction SilentlyContinue) {
-        throw "AutoCAD is still running. Close AutoCAD and run the installer again."
+        throw "AutoCAD is still running. Respond to any AutoCAD save prompt, close AutoCAD, and run the installer again."
     }
 }
 
@@ -337,6 +371,32 @@ function Move-ExistingBundleToBackupOrOverlay {
     }
 }
 
+function TryDeleteOrRenameStaleFile {
+    param([string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        return
+    }
+
+    try {
+        Remove-Item -LiteralPath $Path -Force
+        return
+    }
+    catch {
+    }
+
+    $pendingName = (Split-Path -Leaf $Path) + ".delete_pending_" + (Get-Date -Format "yyyyMMdd_HHmmss")
+    try {
+        Rename-Item -LiteralPath $Path -NewName $pendingName -Force
+    }
+    catch {
+        Set-InstallerProgress `
+            -Status "Installing add-in files..." `
+            -Percent 90 `
+            -Detail "Stale locked file will be ignored until AutoCAD restarts.`r`n$Path"
+    }
+}
+
 function Remove-StalePayloadFiles {
     param([string]$TargetBundle)
 
@@ -347,18 +407,18 @@ function Remove-StalePayloadFiles {
 
     $allowedDlls = @(
         "SeesumAiRibbon_v53.dll",
-        "SeesumAiUpdateChecker_v10.dll",
-        "SeesumAiRibbonInfo_v7.dll"
+        "SeesumAiUpdateChecker_v11.dll",
+        "SeesumAiRibbonInfo_v8.dll"
     )
 
     Get-ChildItem -LiteralPath $windowsDir -File -Filter "SeesumAi*.dll" -ErrorAction SilentlyContinue |
         Where-Object { $allowedDlls -notcontains $_.Name } |
-        Remove-Item -Force
+        ForEach-Object { TryDeleteOrRenameStaleFile -Path $_.FullName }
 
     foreach ($staleIcon in @("manual.png", "version.png")) {
         $path = Join-Path $windowsDir "Resources\$staleIcon"
         if (Test-Path -LiteralPath $path) {
-            Remove-Item -LiteralPath $path -Force
+            TryDeleteOrRenameStaleFile -Path $path
         }
     }
 }

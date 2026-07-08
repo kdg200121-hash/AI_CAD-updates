@@ -21,6 +21,6 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 ## Current Release
 
-- Version: 1.0.6
+- Version: 1.0.7
 - Minimum supported version: 1.0.0
-- Release note: PCC opening-aware wall selection and BME locked-layer handling.
+- Release note: AutoCAD update now requests AutoCAD shutdown automatically and ignores locked stale DLL cleanup failures.
