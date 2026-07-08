@@ -1,10 +1,10 @@
 ﻿{
     "appName":  "Seesum AI AutoCAD",
-    "latestVersion":  "1.0.5",
-    "latestDisplayVersion":  "1.0.5",
+    "latestVersion":  "1.0.6",
+    "latestDisplayVersion":  "1.0.6",
     "minSupportedVersion":  "1.0.0",
     "minSupportedDisplayVersion":  "1.0.0",
     "downloadUrl":  "https://github.com/kdg200121-hash/AI_CAD-updates",
     "installerPackageUrl":  "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/SeesumAI.bundle.zip",
-    "releaseNote":  "Fix installer access denied by running the updater from temp and falling back to in-place bundle updates when backup move is blocked."
+    "releaseNote":  "PCC opening-aware wall selection and BME locked-layer handling."
 }

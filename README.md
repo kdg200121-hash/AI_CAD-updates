@@ -21,6 +21,6 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 ## Current Release
 
-- Version: 1.0.5
+- Version: 1.0.6
 - Minimum supported version: 1.0.0
-- Release note: Fix installer access denied by running the updater from temp and falling back to in-place bundle updates when backup move is blocked.
+- Release note: PCC opening-aware wall selection and BME locked-layer handling.
