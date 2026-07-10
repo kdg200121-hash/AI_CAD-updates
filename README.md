@@ -21,6 +21,6 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 ## Current Release
 
-- Version: 1.0.7
+- Version: 1.0.8
 - Minimum supported version: 1.0.0
-- Release note: AutoCAD update now requests AutoCAD shutdown automatically and ignores locked stale DLL cleanup failures.
+- Release note: Installer now prefers the all-users AutoCAD ApplicationPlugins location when available, preserves the existing bundle location during updates, and guarantees the Seesum AI ribbon tab after AutoCAD 2022 startup.

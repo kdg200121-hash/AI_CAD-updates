@@ -2,6 +2,7 @@
     [string]$VersionJsonUrl = "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/version.json",
     [string]$PackageUrl,
     [string]$TargetBundleName = "SeesumAI.bundle",
+    [string]$TargetPluginsRoot,
     [int]$AutoCADPid = 0,
     [switch]$StartedFromAutoCAD
 )
@@ -268,6 +269,36 @@ function Get-BackupRoot {
     return Join-Path $localAppData "SeesumAI\AutoCAD\Backups"
 }
 
+function Test-CanWriteDirectory {
+    param([string]$Path)
+
+    try {
+        New-Item -ItemType Directory -Force -Path $Path | Out-Null
+        $probe = Join-Path $Path (".seesumai-write-test-" + [Guid]::NewGuid().ToString("N"))
+        Set-Content -LiteralPath $probe -Value "" -Encoding ASCII
+        Remove-Item -LiteralPath $probe -Force
+        return $true
+    }
+    catch {
+        return $false
+    }
+}
+
+function Get-TargetPluginsRoot {
+    param([string]$ExplicitRoot)
+
+    if (-not [string]::IsNullOrWhiteSpace($ExplicitRoot)) {
+        return $ExplicitRoot
+    }
+
+    $programDataPlugins = Join-Path $env:ProgramData "Autodesk\ApplicationPlugins"
+    if (Test-CanWriteDirectory -Path $programDataPlugins) {
+        return $programDataPlugins
+    }
+
+    return Join-Path $env:APPDATA "Autodesk\ApplicationPlugins"
+}
+
 function Get-UniqueBackupPath {
     param(
         [string]$BackupRoot,
@@ -407,8 +438,9 @@ function Remove-StalePayloadFiles {
 
     $allowedDlls = @(
         "SeesumAiRibbon_v53.dll",
-        "SeesumAiUpdateChecker_v11.dll",
-        "SeesumAiRibbonInfo_v8.dll"
+        "SeesumAiUpdateChecker_v12.dll",
+        "SeesumAiRibbonInfo_v9.dll",
+        "SeesumAiDrawingNumber_v2.dll"
     )
 
     Get-ChildItem -LiteralPath $windowsDir -File -Filter "SeesumAi*.dll" -ErrorAction SilentlyContinue |
@@ -443,7 +475,7 @@ try {
 
     Set-InstallerProgress -Status "Installing add-in files..." -Percent 80 -Detail $TargetBundleName
     $bundleRoot = Find-BundleRoot -ExtractRoot $extractRoot
-    $targetPlugins = Join-Path $env:APPDATA "Autodesk\ApplicationPlugins"
+    $targetPlugins = Get-TargetPluginsRoot -ExplicitRoot $TargetPluginsRoot
     $targetBundle = Join-Path $targetPlugins $TargetBundleName
     New-Item -ItemType Directory -Force -Path $targetPlugins | Out-Null
     Move-PluginBackupsOut -TargetPlugins $targetPlugins -TargetBundleName $TargetBundleName
