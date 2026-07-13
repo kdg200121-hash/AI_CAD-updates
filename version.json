@@ -1,10 +1,10 @@
 ﻿{
     "appName":  "Seesum AI AutoCAD",
-    "latestVersion":  "1.0.8",
-    "latestDisplayVersion":  "1.0.8",
+    "latestVersion":  "1.1.0",
+    "latestDisplayVersion":  "1.1.0",
     "minSupportedVersion":  "1.0.0",
     "minSupportedDisplayVersion":  "1.0.0",
     "downloadUrl":  "https://github.com/kdg200121-hash/AI_CAD-updates",
     "installerPackageUrl":  "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/SeesumAI.bundle.zip",
-    "releaseNote":  "Installer now prefers the all-users AutoCAD ApplicationPlugins location when available, preserves the existing bundle location during updates, and guarantees the Seesum AI ribbon tab after AutoCAD 2022 startup."
+    "releaseNote":  "Seesum AI AutoCAD 1.1.0: PCG removed, unverified warnings added, Drawing Split/Block Sync/RE2+ updated."
 }

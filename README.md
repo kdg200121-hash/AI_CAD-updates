@@ -21,6 +21,6 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 ## Current Release
 
-- Version: 1.0.8
+- Version: 1.1.0
 - Minimum supported version: 1.0.0
-- Release note: Installer now prefers the all-users AutoCAD ApplicationPlugins location when available, preserves the existing bundle location during updates, and guarantees the Seesum AI ribbon tab after AutoCAD 2022 startup.
+- Release note: Seesum AI AutoCAD 1.1.0: PCG removed, unverified warnings added, Drawing Split/Block Sync/RE2+ updated.

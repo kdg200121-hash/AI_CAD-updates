@@ -1,6 +1,7 @@
-﻿param(
+param(
     [string]$VersionJsonUrl = "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/version.json",
     [string]$PackageUrl,
+    [string]$LocalPackagePath,
     [string]$TargetBundleName = "SeesumAI.bundle",
     [string]$TargetPluginsRoot,
     [int]$AutoCADPid = 0,
@@ -438,16 +439,19 @@ function Remove-StalePayloadFiles {
 
     $allowedDlls = @(
         "SeesumAiRibbon_v53.dll",
-        "SeesumAiUpdateChecker_v12.dll",
-        "SeesumAiRibbonInfo_v9.dll",
-        "SeesumAiDrawingNumber_v2.dll"
+        "SeesumAiUpdateChecker_v16.dll",
+        "SeesumAiRibbonInfo_v13.dll",
+        "SeesumAiDrawingNumber_v9.dll",
+        "SeesumAiDrawingSplit_v5.dll",
+        "SeesumAiBlockSync_v9.dll",
+        "SeesumAiRe2Plus_v15.dll"
     )
 
     Get-ChildItem -LiteralPath $windowsDir -File -Filter "SeesumAi*.dll" -ErrorAction SilentlyContinue |
         Where-Object { $allowedDlls -notcontains $_.Name } |
         ForEach-Object { TryDeleteOrRenameStaleFile -Path $_.FullName }
 
-    foreach ($staleIcon in @("manual.png", "version.png")) {
+    foreach ($staleIcon in @("manual.png", "manual_v2.png", "version.png")) {
         $path = Join-Path $windowsDir "Resources\$staleIcon"
         if (Test-Path -LiteralPath $path) {
             TryDeleteOrRenameStaleFile -Path $path
@@ -455,12 +459,69 @@ function Remove-StalePayloadFiles {
     }
 }
 
+function Repair-Re2PlusDemandLoadCache {
+    param([string]$TargetBundle)
+
+    $loader = Join-Path $TargetBundle "Contents\Windows\SeesumAiRe2Plus_v15.dll"
+    if (-not (Test-Path -LiteralPath $loader)) {
+        return
+    }
+    $assemblyName = [IO.Path]::GetFileNameWithoutExtension($loader)
+
+    $roots = @(
+        "HKCU:\Software\Autodesk\AutoCAD",
+        "HKCU:\Software\appdatalow\software\Autodesk\AutoCAD"
+    )
+
+    foreach ($root in $roots) {
+        if (-not (Test-Path -LiteralPath $root)) {
+            continue
+        }
+
+        Get-ChildItem -LiteralPath $root -Recurse -ErrorAction SilentlyContinue |
+            Where-Object { $_.PSChildName -eq "Seesum AI RE2 Plus" -and $_.Name -like "*\Applications\Seesum AI RE2 Plus" } |
+            ForEach-Object {
+                Set-ItemProperty -LiteralPath $_.PSPath -Name "LOADER" -Value $loader -ErrorAction SilentlyContinue
+                $profileKey = Split-Path -Parent (Split-Path -Parent $_.PSPath)
+                $assemblyMap = Join-Path $profileKey "AssemblyMap"
+                if (Test-Path -LiteralPath $assemblyMap) {
+                    (Get-Item -LiteralPath $assemblyMap).Property |
+                        Where-Object { $_ -like "SeesumAiRe2Plus_v*" } |
+                        ForEach-Object { Remove-ItemProperty -LiteralPath $assemblyMap -Name $_ -ErrorAction SilentlyContinue }
+                    Set-ItemProperty -LiteralPath $assemblyMap -Name $assemblyName -Value $loader -ErrorAction SilentlyContinue
+                }
+
+                $loadedRoot = Join-Path $profileKey "Loaded"
+                if (Test-Path -LiteralPath $loadedRoot) {
+                    Get-ChildItem -LiteralPath $loadedRoot -Recurse -ErrorAction SilentlyContinue |
+                        Where-Object { $_.Name -like "*SeesumAI.bundle*" -and $_.Name -like "*SeesumAiRe2Plus_v*.dll" -and $_.Name -notlike "*$assemblyName.dll" } |
+                        Sort-Object PSPath -Descending |
+                        ForEach-Object { Remove-Item -LiteralPath $_.PSPath -Recurse -Force -ErrorAction SilentlyContinue }
+
+                    Get-ChildItem -LiteralPath $loadedRoot -Recurse -ErrorAction SilentlyContinue |
+                        Where-Object { $_.PSChildName -eq "#AssemblyMappings" -and $_.Name -like "*SeesumAI.bundle*" } |
+                        ForEach-Object {
+                            $mappingPath = $_.PSPath
+                            $_.Property |
+                                Where-Object { $_ -like "SeesumAiRe2Plus_v*" } |
+                                ForEach-Object { Remove-ItemProperty -LiteralPath $mappingPath -Name $_ -ErrorAction SilentlyContinue }
+                            Set-ItemProperty -LiteralPath $mappingPath -Name $assemblyName -Value "" -ErrorAction SilentlyContinue
+                        }
+                }
+            }
+    }
+}
+
 Initialize-InstallerWindow
 
 try {
-    $versionInfo = Read-VersionInfo -Url $VersionJsonUrl
-    $resolvedPackageUrl = Get-PackageUrl -VersionInfo $versionInfo -ExplicitPackageUrl $PackageUrl
-    $packagePath = Resolve-PackagePath -Source $resolvedPackageUrl
+    if ($LocalPackagePath) {
+        $packagePath = [IO.Path]::GetFullPath($LocalPackagePath)
+    } else {
+        $versionInfo = Read-VersionInfo -Url $VersionJsonUrl
+        $resolvedPackageUrl = Get-PackageUrl -VersionInfo $versionInfo -ExplicitPackageUrl $PackageUrl
+        $packagePath = Resolve-PackagePath -Source $resolvedPackageUrl
+    }
 
     if (-not (Test-Path -LiteralPath $packagePath)) {
         throw "Package was not found: $packagePath"
@@ -489,7 +550,12 @@ try {
     }
 
     Copy-BundleContents -SourceBundle $bundleRoot -TargetBundle $targetBundle
+    $nestedBundle = Join-Path $targetBundle "SeesumAI.bundle"
+    if (Test-Path -LiteralPath $nestedBundle) {
+        Remove-Item -LiteralPath $nestedBundle -Recurse -Force
+    }
     Remove-StalePayloadFiles -TargetBundle $targetBundle
+    Repair-Re2PlusDemandLoadCache -TargetBundle $targetBundle
 
     Complete-InstallerWindow `
         -Status "Update installed." `
