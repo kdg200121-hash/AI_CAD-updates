@@ -21,6 +21,6 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 ## Current Release
 
-- Version: 1.1.0
+- Version: 1.1.1
 - Minimum supported version: 1.0.0
-- Release note: Seesum AI AutoCAD 1.1.0: PCG removed, unverified warnings added, Drawing Split/Block Sync/RE2+ updated.
+- Release note: Release AutoCAD add-in 1.1.1

@@ -5,7 +5,8 @@ param(
     [string]$TargetBundleName = "SeesumAI.bundle",
     [string]$TargetPluginsRoot,
     [int]$AutoCADPid = 0,
-    [switch]$StartedFromAutoCAD
+    [switch]$StartedFromAutoCAD,
+    [switch]$NonInteractive
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,6 +22,9 @@ $script:PercentLabel = $null
 $script:CloseButton = $null
 
 function Initialize-InstallerWindow {
+    if ($NonInteractive) {
+        return
+    }
     $script:Form = New-Object System.Windows.Forms.Form
     $script:Form.Text = "Seesum AI AutoCAD Update"
     $script:Form.Width = 500
@@ -115,6 +119,11 @@ function Complete-InstallerWindow {
         [string]$Detail,
         [bool]$Failed = $false
     )
+
+    if ($NonInteractive) {
+        Write-Host "$Status $Detail"
+        return
+    }
 
     Set-InstallerProgress -Status $Status -Percent 100 -Detail $Detail
     if ($Failed) {
@@ -439,12 +448,12 @@ function Remove-StalePayloadFiles {
 
     $allowedDlls = @(
         "SeesumAiRibbon_v53.dll",
-        "SeesumAiUpdateChecker_v16.dll",
-        "SeesumAiRibbonInfo_v13.dll",
+        "SeesumAiUpdateChecker_v17.dll",
+        "SeesumAiRibbonInfo_v14.dll",
         "SeesumAiDrawingNumber_v9.dll",
-        "SeesumAiDrawingSplit_v5.dll",
-        "SeesumAiBlockSync_v9.dll",
-        "SeesumAiRe2Plus_v15.dll"
+        "SeesumAiDrawingSplit_v7.dll",
+        "SeesumAiBlockSync_v14.dll",
+        "SeesumAiRe2Plus_v19.dll"
     )
 
     Get-ChildItem -LiteralPath $windowsDir -File -Filter "SeesumAi*.dll" -ErrorAction SilentlyContinue |
@@ -462,7 +471,7 @@ function Remove-StalePayloadFiles {
 function Repair-Re2PlusDemandLoadCache {
     param([string]$TargetBundle)
 
-    $loader = Join-Path $TargetBundle "Contents\Windows\SeesumAiRe2Plus_v15.dll"
+    $loader = Join-Path $TargetBundle "Contents\Windows\SeesumAiRe2Plus_v19.dll"
     if (-not (Test-Path -LiteralPath $loader)) {
         return
     }
