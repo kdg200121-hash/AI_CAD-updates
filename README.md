@@ -21,6 +21,6 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 ## Current Release
 
-- Version: 1.1.1
+- Version: 1.1.2
 - Minimum supported version: 1.0.0
-- Release note: Release AutoCAD add-in 1.1.1
+- Release note: 도면번호 파일명 구조 인식 개선

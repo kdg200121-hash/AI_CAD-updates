@@ -448,12 +448,12 @@ function Remove-StalePayloadFiles {
 
     $allowedDlls = @(
         "SeesumAiRibbon_v53.dll",
-        "SeesumAiUpdateChecker_v17.dll",
-        "SeesumAiRibbonInfo_v14.dll",
-        "SeesumAiDrawingNumber_v9.dll",
+        "SeesumAiUpdateChecker_v18.dll",
+        "SeesumAiRibbonInfo_v15.dll",
+        "SeesumAiDrawingNumber_v16.dll",
         "SeesumAiDrawingSplit_v7.dll",
         "SeesumAiBlockSync_v14.dll",
-        "SeesumAiRe2Plus_v19.dll"
+        "SeesumAiRe2Plus_v23.dll"
     )
 
     Get-ChildItem -LiteralPath $windowsDir -File -Filter "SeesumAi*.dll" -ErrorAction SilentlyContinue |
@@ -471,7 +471,7 @@ function Remove-StalePayloadFiles {
 function Repair-Re2PlusDemandLoadCache {
     param([string]$TargetBundle)
 
-    $loader = Join-Path $TargetBundle "Contents\Windows\SeesumAiRe2Plus_v19.dll"
+    $loader = Join-Path $TargetBundle "Contents\Windows\SeesumAiRe2Plus_v23.dll"
     if (-not (Test-Path -LiteralPath $loader)) {
         return
     }

@@ -1,10 +1,10 @@
 ﻿{
     "appName":  "Seesum AI AutoCAD",
-    "latestVersion":  "1.1.1",
-    "latestDisplayVersion":  "1.1.1",
+    "latestVersion":  "1.1.2",
+    "latestDisplayVersion":  "1.1.2",
     "minSupportedVersion":  "1.0.0",
     "minSupportedDisplayVersion":  "1.0.0",
     "downloadUrl":  "https://github.com/kdg200121-hash/AI_CAD-updates",
     "installerPackageUrl":  "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/SeesumAI.bundle.zip",
-    "releaseNote":  "Release AutoCAD add-in 1.1.1"
+    "releaseNote":  "도면번호 파일명 구조 인식 개선"
 }
