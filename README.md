@@ -21,6 +21,6 @@ powershell -ExecutionPolicy Bypass -File .\install-latest.ps1
 
 ## Current Release
 
-- Version: 1.1.6
+- Version: 1.1.7
 - Minimum supported version: 1.0.0
-- Release note: PCC 이전 안정 버전 복원 및 BTE 최신 한글 프롬프트 반영
+- Release note: BTE 안내 한글 복구 및 좌표·회전값 소수점 반올림

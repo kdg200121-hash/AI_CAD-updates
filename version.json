@@ -1,10 +1,10 @@
 ﻿{
     "appName":  "Seesum AI AutoCAD",
-    "latestVersion":  "1.1.6",
-    "latestDisplayVersion":  "1.1.6",
+    "latestVersion":  "1.1.7",
+    "latestDisplayVersion":  "1.1.7",
     "minSupportedVersion":  "1.0.0",
     "minSupportedDisplayVersion":  "1.0.0",
     "downloadUrl":  "https://github.com/kdg200121-hash/AI_CAD-updates",
     "installerPackageUrl":  "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/SeesumAI.bundle.zip",
-    "releaseNote":  "PCC 이전 안정 버전 복원 및 BTE 최신 한글 프롬프트 반영"
+    "releaseNote":  "BTE 안내 한글 복구 및 좌표·회전값 소수점 반올림"
 }

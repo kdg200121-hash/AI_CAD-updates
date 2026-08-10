@@ -447,9 +447,9 @@ function Remove-StalePayloadFiles {
     }
 
     $allowedDlls = @(
-        "SeesumAiRibbon_v56.dll",
-        "SeesumAiUpdateChecker_v22.dll",
-        "SeesumAiRibbonInfo_v19.dll",
+        "SeesumAiRibbon_v57.dll",
+        "SeesumAiUpdateChecker_v23.dll",
+        "SeesumAiRibbonInfo_v20.dll",
         "SeesumAiDrawingNumber_v16.dll",
         "SeesumAiDrawingSplit_v7.dll",
         "SeesumAiBlockSync_v14.dll",
