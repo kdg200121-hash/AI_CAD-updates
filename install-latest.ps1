@@ -1,5 +1,5 @@
 param(
-    [string]$VersionJsonUrl = "https://raw.githubusercontent.com/kdg200121-hash/AI_CAD-updates/main/version.json",
+    [string]$VersionJsonUrl = "file://192.168.0.12/seesum eng 2/RND-TF/98.Git/AI_CAD-updates/version.json",
     [string]$PackageUrl,
     [string]$LocalPackagePath,
     [string]$TargetBundleName = "SeesumAI.bundle",
@@ -13,6 +13,12 @@ $ErrorActionPreference = "Stop"
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
+
+try {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+}
+catch {
+}
 
 $script:Form = $null
 $script:StatusLabel = $null
@@ -447,13 +453,13 @@ function Remove-StalePayloadFiles {
     }
 
     $allowedDlls = @(
-        "SeesumAiRibbon_v57.dll",
-        "SeesumAiUpdateChecker_v23.dll",
-        "SeesumAiRibbonInfo_v20.dll",
-        "SeesumAiDrawingNumber_v16.dll",
-        "SeesumAiDrawingSplit_v7.dll",
-        "SeesumAiBlockSync_v14.dll",
-        "SeesumAiRe2Plus_v23.dll"
+        "SeesumAiRibbon_v58.dll",
+        "SeesumAiUpdateChecker_v27.dll",
+        "SeesumAiRibbonInfo_v29.dll",
+        "SeesumAiDrawingNumber_v17.dll",
+        "SeesumAiDrawingSplit_v8.dll",
+        "SeesumAiBlockSync_v15.dll",
+        "SeesumAiRe2Plus_v24.dll"
     )
 
     Get-ChildItem -LiteralPath $windowsDir -File -Filter "SeesumAi*.dll" -ErrorAction SilentlyContinue |
@@ -471,7 +477,7 @@ function Remove-StalePayloadFiles {
 function Repair-Re2PlusDemandLoadCache {
     param([string]$TargetBundle)
 
-    $loader = Join-Path $TargetBundle "Contents\Windows\SeesumAiRe2Plus_v23.dll"
+    $loader = Join-Path $TargetBundle "Contents\Windows\SeesumAiRe2Plus_v24.dll"
     if (-not (Test-Path -LiteralPath $loader)) {
         return
     }
